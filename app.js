@@ -1,4 +1,4 @@
-const API_KEY = "fd694b54471a4ac0bb7b3f23ccbe1297";
+const API_KEY = "const API_KEY = "pub_fd694b54471a4ac0bb7b3f23ccbe1297";
 
 let coins = Number(localStorage.getItem("coins")) || 0;
 document.getElementById("coins").innerHTML = "🪙 " + coins + " Coins";
