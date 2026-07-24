@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latest News</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f2f2f2;
+}
+header{
+    background:#0d6efd;
+    color:#fff;
+    padding:15px;
+    text-align:center;
+}
+#news{
+    padding:15px;
+}
+.card{
+    background:#fff;
+    border-radius:10px;
+    margin-bottom:15px;
+    overflow:hidden;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+.card h3{
+    padding:10px;
+    margin:0;
+}
+.card p{
+    padding:0 10px 10px;
+    color:#555;
+}
+.card a{
+    display:block;
+    background:#0d6efd;
+    color:#fff;
+    text-align:center;
+    text-decoration:none;
+    padding:12px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+<h2>📰 Latest News</h2>
+</header>
+
+<div id="news">
+Loading...
+</div>
+
+<script>
+
+const api =
+"https://newsdata.io/api/1/latest?apikey=pub_fd694b54471a4ac0bb7b3f23ccbe1297&country=in&language=en";
+
+fetch(api)
+.then(response=>response.json())
+.then(data=>{
+
+console.log(data);
+
+let html="";
+
+if(data.results){
+
+data.results.forEach(item=>{
+
+html+=`
+<div class="card">
+
+<img src="${item.image_url || 'https://picsum.photos/600/300'}">
+
+<h3>${item.title}</h3>
+
+<p>${item.description || ''}</p>
+
+<a href="${item.link}" target="_blank">
+Read More
+</a>
+
+</div>
+`;
+
+});
+
+}else{
+
+html="<h2>No news found</h2><pre>"+JSON.stringify(data,null,2)+"</pre>";
+
+}
+
+document.getElementById("news").innerHTML=html;
+
+})
+.catch(error=>{
+
+document.getElementById("news").innerHTML="<pre>"+error+"</pre>";
+
+console.log(error);
+
+});
+
+</script>
+
+</body>
+</html>
