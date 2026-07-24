@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/* =========================
+   Theme Variables
+========================= */
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --secondary: #10b981;
+
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+
+  --text: #0f172a;
+  --text-muted: #64748b;
+
+  --border: #e2e8f0;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+
+  --radius: 16px;
+
+  --shadow-sm: 0 2px 6px rgba(0,0,0,.05);
+  --shadow-md: 0 10px 25px rgba(0,0,0,.08);
+}
+
+/* Dark Theme */
+
+.dark {
+  --background: #020617;
+  --surface: #0f172a;
+  --surface-2: #1e293b;
+
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --border: #334155;
+}
+
+/* =========================
+   Reset
+========================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition:
+    background .3s ease,
+    color .3s ease;
+}
+
+/* =========================
+   Typography
+========================= */
+
+h1,h2,h3,h4,h5,h6{
+  font-weight:700;
+  color:var(--text);
+}
+
+p{
+  color:var(--text-muted);
+  line-height:1.6;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+img{
+  display:block;
+  max-width:100%;
+}
+
+/* =========================
+   Layout
+========================= */
+
+.container{
+  width:100%;
+  max-width:720px;
+  margin:auto;
+  padding:16px;
+}
+
+.page{
+  padding-bottom:90px;
+}
+
+.section-title{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+/* =========================
+   Scrollbar
+========================= */
+
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:var(--primary);
+  border-radius:999px;
+}
+
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+/* =========================
+   Utilities
+========================= */
+
+.flex-center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.rounded{
+  border-radius:var(--radius);
+}
+
+.shadow{
+  box-shadow:var(--shadow-md);
+}
+
+.hidden{
+  display:none;
+}
+
+.text-primary{
+  color:var(--primary);
+}
+
+.bg-primary{
+  background:var(--primary);
+  color:#fff;
+}
