@@ -1,61 +1,123 @@
-"use client";
+  return (
+    <main className="page">
+      <div className="container">
+        {/* Header */}
+        <header
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "20px",
+          }}
+        >
+          <div>
+            <h1 className="section-title">📰 NewsCash</h1>
+            <p>Read news and earn rewards</p>
+          </div>
+        </header>
 
-import { useEffect, useState } from "react";
+        {/* Categories */}
+        <div className="category-list">
+          {categories.map((item) => (
+            <button
+              key={item}
+              className={`category-chip ${
+                category === item ? "active" : ""
+              }`}
+              onClick={() => setCategory(item)}
+            >
+              {item.toUpperCase()}
+            </button>
+          ))}
+        </div>
 
-type NewsArticle = {
-  title: string;
-  description: string;
-  content?: string;
-  image?: string;
-  url: string;
-  source?: {
-    name: string;
-  };
-  publishedAt: string;
-};
+        {/* Error */}
+        {error && (
+          <div
+            style={{
+              background: "#fee2e2",
+              color: "#991b1b",
+              padding: "12px",
+              borderRadius: "12px",
+              marginBottom: "16px",
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-const categories = [
-  "general",
-  "world",
-  "nation",
-  "business",
-  "technology",
-  "sports",
-  "entertainment",
-  "health",
-  "science",
-];
+        {/* Loading */}
+        {loading && (
+          <>
+            {[1, 2, 3].map((i) => (
+              <div className="news-card" key={i}>
+                <div className="skeleton image"></div>
 
-export default function HomePage() {
-  const [articles, setArticles] = useState<NewsArticle[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [category, setCategory] = useState("general");
+                <div className="news-content">
+                  <div className="skeleton title"></div>
+                  <div className="skeleton text"></div>
+                  <div className="skeleton text short"></div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
 
-  async function loadNews(selectedCategory: string) {
-    try {
-      setLoading(true);
-      setError("");
+        {/* Articles */}
+        {!loading &&
+          articles.map((article, index) => (
+            <article className="news-card fade-in" key={index}>
+              {article.image && (
+                <img
+                  src={article.image}
+                  alt={article.title}
+                  className="news-image"
+                />
+              )}
 
-      const res = await fetch(`/api/news?category=${selectedCategory}`, {
-        cache: "no-store",
-      });
+              <div className="news-content">
+                <div className="news-source">
+                  {article.source?.name || "News"}
+                </div>
 
-      if (!res.ok) {
-        throw new Error("Unable to load news");
-      }
+                <h2 className="news-title">{article.title}</h2>
 
-      const data = await res.json();
+                <p className="news-description">
+                  {article.description}
+                </p>
 
-      setArticles(data.articles || []);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to fetch latest news.");
-    } finally {
-      setLoading(false);
-    }
-  }
+                <div className="news-footer">
+                  <small className="news-date">
+                    {new Date(
+                      article.publishedAt
+                    ).toLocaleDateString()}
+                  </small>
 
-  useEffect(() => {
-    loadNews(category);
-  }, [category]);
+                  <a
+                    className="btn btn-primary"
+                    href={article.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read →
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+
+        {!loading && articles.length === 0 && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "40px 20px",
+            }}
+          >
+            <h2>No News Found</h2>
+            <p>Please try another category.</p>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
