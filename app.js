@@ -1,129 +1,181 @@
-const API_KEY = "const API_KEY = "pub_fd694b54471a4ac0bb7b3f23ccbe1297";
-
 let coins = Number(localStorage.getItem("coins")) || 0;
-document.getElementById("coins").innerHTML = "🪙 " + coins + " Coins";
+let nextPage = "";
+let loading = false;
+
+const coinValue = document.getElementById("coinValue");
+const newsDiv = document.getElementById("news");
+const loadingDiv = document.getElementById("loading");
+const searchInput = document.getElementById("search");
+const categorySelect = document.getElementById("category");
+
+coinValue.textContent = coins;
 
 // Dark Mode
 document.getElementById("darkBtn").onclick = () => {
     document.body.classList.toggle("dark");
+    localStorage.setItem("dark", document.body.classList.contains("dark"));
 };
 
-async function loadNews(query = "") {
+if(localStorage.getItem("dark") === "true"){
+    document.body.classList.add("dark");
+}
 
-const url = query
-? `https://newsdata.io/api/1/latest?apikey=${API_KEY}&q=${encodeURIComponent(query)}&language=en`
-: `https://newsdata.io/api/1/latest?apikey=${API_KEY}&country=in&language=en`;
+async function loadNews(reset=true){
 
-document.getElementById("loader").style.display="block";
+    if(loading) return;
 
-try{
+    loading=true;
 
-const res = await fetch(url);
-const data = await res.json();
+    loadingDiv.style.display="block";
 
-document.getElementById("loader").style.display="none";
+    if(reset){
+        nextPage="";
+        newsDiv.innerHTML="";
+    }
 
-showNews(data.results || []);
+    let url="/api/news?";
 
-}catch(e){
+    if(searchInput.value){
+        url+="q="+encodeURIComponent(searchInput.value)+"&";
+    }
 
-document.getElementById("loader").innerHTML="Failed to load news.";
+    if(categorySelect.value){
+        url+="category="+categorySelect.value+"&";
+    }
+
+    if(nextPage){
+        url+="page="+nextPage;
+    }
+
+    try{
+
+        const res=await fetch(url);
+
+        const data=await res.json();
+
+        loadingDiv.style.display="none";
+
+        loading=false;
+
+        if(data.status!=="success"){
+
+            newsDiv.innerHTML="<h3>"+(data.message||"No News Found")+"</h3>";
+
+            return;
+
+        }
+
+        nextPage=data.nextPage || "";
+
+        renderNews(data.results);
+
+    }catch(e){
+
+        loading=false;
+
+        loadingDiv.innerHTML="Unable to load news.";
+
+    }
 
 }
 
-}
+function renderNews(list){
 
-function showNews(news){
+list.forEach((item,index)=>{
 
-let html="";
+const card=document.createElement("div");
 
-news.forEach((item,index)=>{
+card.className="card";
 
-html+=`
+card.innerHTML=`
 
-<div class="card">
-
-<img src="${item.image_url || 'https://picsum.photos/600/300?random='+index}">
+<img src="${item.image_url || 'https://picsum.photos/600/300?random='+Math.random()}">
 
 <div class="content">
 
 <h3>${item.title}</h3>
 
-<p>${(item.description||"No Description").substring(0,150)}...</p>
+<p>${(item.description||"No description available.").substring(0,160)}...</p>
 
 <div class="actions">
 
-<button class="like" onclick="likeNews(this)">❤️</button>
+<button class="like">❤️</button>
 
-<button class="bookmark" onclick="bookmark('${item.link}')">🔖</button>
+<button class="bookmark">🔖</button>
 
-<button class="share" onclick="shareNews('${item.link}')">📤</button>
+<button class="share">📤</button>
 
 </div>
 
-<div class="timer" id="timer${index}"></div>
+<div class="timer" id="timer${Date.now()+index}"></div>
 
-<button class="read" onclick="startReading('${item.link}',${index},this)">
+<button class="read">
 Read & Earn +5
 </button>
 
 </div>
 
-</div>
-
 `;
 
-});
+const likeBtn=card.querySelector(".like");
 
-document.getElementById("news").innerHTML=html;
+likeBtn.onclick=()=>{
 
-}
+likeBtn.innerHTML="💖";
 
-function likeNews(btn){
+};
 
-btn.innerHTML="❤️ Liked";
+const bookmarkBtn=card.querySelector(".bookmark");
 
-}
-
-function bookmark(url){
+bookmarkBtn.onclick=()=>{
 
 let list=JSON.parse(localStorage.getItem("bookmarks")||"[]");
 
-if(!list.includes(url)){
+if(!list.includes(item.link)){
 
-list.push(url);
+list.push(item.link);
 
 localStorage.setItem("bookmarks",JSON.stringify(list));
 
-alert("Bookmarked!");
+alert("Bookmarked");
 
 }
 
-}
+};
 
-function shareNews(url){
+const shareBtn=card.querySelector(".share");
+
+shareBtn.onclick=()=>{
 
 if(navigator.share){
 
-navigator.share({url});
+navigator.share({
+
+title:item.title,
+
+url:item.link
+
+});
 
 }else{
 
-navigator.clipboard.writeText(url);
+navigator.clipboard.writeText(item.link);
 
-alert("Link copied!");
-
-}
+alert("Link copied");
 
 }
 
-function startReading(url,id,btn){
+};
 
-btn.disabled=true;
+const timer=card.querySelector(".timer");
+
+const readBtn=card.querySelector(".read");
+
+readBtn.onclick=()=>{
+
+readBtn.disabled=true;
 
 let sec=30;
-
-const timer=document.getElementById("timer"+id);
 
 timer.innerHTML="⏳ "+sec+" sec";
 
@@ -141,22 +193,53 @@ coins+=5;
 
 localStorage.setItem("coins",coins);
 
-document.getElementById("coins").innerHTML="🪙 "+coins+" Coins";
+coinValue.textContent=coins;
 
 timer.innerHTML="✅ +5 Coins Earned";
 
-window.open(url,"_blank");
+window.open(item.link,"_blank");
 
 }
 
 },1000);
 
+};
+
+newsDiv.appendChild(card);
+
+});
+
 }
 
 // Search
-document.getElementById("search").addEventListener("keyup",(e)=>{
+searchInput.onkeyup=()=>{
 
-loadNews(e.target.value);
+loadNews();
+
+};
+
+// Category
+categorySelect.onchange=()=>{
+
+loadNews();
+
+};
+
+// Infinite Scroll
+window.addEventListener("scroll",()=>{
+
+if(
+window.innerHeight + window.scrollY >=
+document.body.offsetHeight-300
+){
+
+if(nextPage){
+
+loadNews(false);
+
+}
+
+}
 
 });
 
