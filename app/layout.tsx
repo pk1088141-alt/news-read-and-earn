@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NewsCash",
-  description: "Read News & Earn",
+  title: "News Read & Earn",
+  description: "Read news and earn rewards",
 };
 
 export default function RootLayout({
