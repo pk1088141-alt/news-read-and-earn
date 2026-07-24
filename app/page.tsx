@@ -1,8 +1,15 @@
-export default function HomePage() {
+export default function Home() {
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>📰 NewsCash</h1>
-      <p>Your Next.js app is running successfully.</p>
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-blue-600">
+          📰 News Read & Earn
+        </h1>
+
+        <p className="mt-4 text-gray-600">
+          Next.js 15 is working successfully.
+        </p>
+      </div>
     </main>
   );
 }
